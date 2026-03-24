@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Utility that reads Record classes and @McpParameter annotations to convert them into MCP JSON Schema.
+ * 
  * Record 클래스와 @McpParameter 어노테이션을 읽어 MCP JSON Schema로 변환하는 유틸리티.
  */
 public final class McpSchemaGenerator {
@@ -17,11 +19,14 @@ public final class McpSchemaGenerator {
     }
 
     /**
+     * Converts a Record class into a Map representing JSON Schema.
+     * Returns a format that can be used to create McpSchema.JsonSchema from the MCP SDK.
+     *
      * Record 클래스를 JSON Schema 형태의 Map으로 변환한다.
      * MCP SDK의 McpSchema.JsonSchema 생성에 사용할 수 있는 형태를 반환한다.
      *
-     * @param parameterType @McpParameter가 적용된 Record 클래스
-     * @return JSON Schema를 표현하는 Map (type, properties, required)
+     * @param parameterType Record class with @McpParameter annotations
+     * @return Map representing JSON Schema (type, properties, required)
      */
     public static Map<String, Object> generate(Class<?> parameterType) {
         if (parameterType == null) {
@@ -58,6 +63,8 @@ public final class McpSchemaGenerator {
     }
 
     /**
+     * Converts a Java type to a JSON Schema type string.
+     * 
      * Java 타입을 JSON Schema 타입 문자열로 변환한다.
      */
     private static String resolveJsonType(Class<?> type) {
