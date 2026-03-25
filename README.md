@@ -52,8 +52,13 @@ mcp:
   server:
     name: my-app
     version: 1.0.0
-    log-file-path: logs/application.log          # enables built-in log tool
-    api-docs-url: http://localhost:8080/v3/api-docs  # enables built-in API spec tool
+    # The starter will read from this existing log file for the 'read_backend_log' tool.
+    # (Note: This starter does not generate logs, it only reads them)
+    log-file-path: logs/application.log      
+
+    # The starter will fetch the existing OpenAPI spec from this URL for the 'get_api_spec' tool.
+    # (Note: This starter does not generate Swagger/OpenAPI docs)
+    api-docs-url: http://localhost:8080/v3/api-docs  
 ```
 
 ### 3. Create a custom tool

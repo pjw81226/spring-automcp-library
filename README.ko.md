@@ -52,8 +52,13 @@ mcp:
   server:
     name: my-app
     version: 1.0.0
-    log-file-path: logs/application.log          # 로그 파일의 경로 (직접 생성 후 경로 설정해주셔야합니다.)
-    api-docs-url: http://localhost:8080/v3/api-docs  # API 문서 경로 (마찬가지로 직접 생성후 설정해주셔야합니다.)
+    # 스타터가 'read_backend_log' 도구를 위해 이 '기존' 로그 파일을 읽어옵니다.
+    # (참고: 이 라이브러리는 로그를 새로 생성하지 않으며, 오직 읽기만 합니다. 로그파일을 생성하는 설정을 따로 해주셔야합니다.)
+    log-file-path: logs/application.log          
+
+    # 스타터가 'get_api_spec' 도구를 위해 이 URL에서 '기존' OpenAPI 스펙을 가져옵니다.
+    # (참고: 이 라이브러리는 Swagger/OpenAPI 문서를 생성하지 않습니다. 별도의 설정을 통해 생성 후 경로를 설정해주셔야합니다.)
+    api-docs-url: http://localhost:8080/v3/api-docs  
 ```
 
 ### 3. 커스텀 도구 만들기

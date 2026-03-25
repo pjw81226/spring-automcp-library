@@ -19,13 +19,11 @@ repositories {
 ext {
     mcpSdkVersion = '1.1.0'
     // Minimum compatible Spring Boot version for annotation processors only (build-time)
-    // 어노테이션 프로세서 빌드 시에만 사용되는 최소 호환 Spring Boot 버전
     springBootVersion = '3.3.0'
 }
 
 dependencies {
     // Spring Boot (provided by the host application - no version pinned)
-    // 호스트 앱이 Spring Boot 버전을 결정한다 (3.x / 4.x 모두 호환)
     compileOnly "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
     compileOnly "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
 
