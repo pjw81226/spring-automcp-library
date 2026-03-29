@@ -191,6 +191,32 @@ MCP 클라이언트 (Cursor, Claude 등)
 
 ---
 
+## 트러블슈팅
+
+### MCP 메시지 엔드포인트에서 `NoSuchFieldError: POJO` 발생
+
+**증상**: SSE 연결(`/mcp/sse`)은 정상이지만, 메시지 엔드포인트에 POST 요청 시 HTTP 500 에러 발생:
+```
+java.lang.NoSuchFieldError: POJO
+  at tools.jackson.databind.deser.DeserializerCache._createDeserializer2(...)
+```
+
+**원인**: MCP Java SDK (v1.1.0)가 Jackson 3.x를 사용하며, 이 라이브러리는 `jackson-annotations:2.20`을 필요로 합니다.
+그런데 Spring Boot BOM(`io.spring.dependency-management` 플러그인)이 `jackson-annotations`를 `2.18.x`로 강제 다운그레이드하여 호환성 문제가 발생합니다.
+
+**해결**: `build.gradle`에 `jackson-annotations:2.20`을 명시적으로 선언하여 BOM을 오버라이드합니다:
+
+```groovy
+dependencies {
+    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.1'
+
+    // 필수: Spring Boot BOM의 jackson-annotations 버전을 오버라이드
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.20'
+}
+```
+
+---
+
 ## 라이선스
 
 [MIT](LICENSE)

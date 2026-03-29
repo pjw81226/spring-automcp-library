@@ -191,6 +191,32 @@ Host Application + MCP Server
 
 ---
 
+## Troubleshooting
+
+### `NoSuchFieldError: POJO` on MCP message endpoint
+
+**Symptom**: SSE connection (`/mcp/sse`) works fine, but POST requests to the message endpoint return HTTP 500 with:
+```
+java.lang.NoSuchFieldError: POJO
+  at tools.jackson.databind.deser.DeserializerCache._createDeserializer2(...)
+```
+
+**Cause**: The MCP Java SDK (v1.1.0) uses Jackson 3.x, which depends on `jackson-annotations:2.20`.
+Spring Boot's BOM (`io.spring.dependency-management` plugin) forces `jackson-annotations` down to `2.18.x`, causing an incompatibility.
+
+**Fix**: Explicitly declare `jackson-annotations:2.20` in your `build.gradle` to override the BOM:
+
+```groovy
+dependencies {
+    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.1'
+
+    // Required: override Spring Boot BOM's jackson-annotations version
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.20'
+}
+```
+
+---
+
 ## License
 
 [MIT](LICENSE)
