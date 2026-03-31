@@ -191,6 +191,12 @@ MCP 클라이언트 (Cursor, Claude 등)
 
 ---
 
+## 예제
+
+커스텀 도구(`get_server_info`, `get_db_schema`, `get_spring_beans`)가 포함된 전체 동작 예제는 [example 프로젝트](https://github.com/pjw81226/spring-mcp-starter/tree/example-code/example)를 참고하세요.
+
+---
+
 ## 트러블슈팅
 
 ### MCP 메시지 엔드포인트에서 `NoSuchFieldError: POJO` 발생

@@ -191,6 +191,12 @@ Host Application + MCP Server
 
 ---
 
+## Example
+
+See the [example project](https://github.com/pjw81226/spring-mcp-starter/tree/example-code/example) for a complete working demo with custom tools (`get_server_info`, `get_db_schema`, `get_spring_beans`).
+
+---
+
 ## Troubleshooting
 
 ### `NoSuchFieldError: POJO` on MCP message endpoint
