@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: mcp-example
+
+mcp:
+  server:
+    name: example-mcp-server
+    version: 1.0.0
+    log-file-path: logs/application.log
+
+# File logging configuration
+logging:
+  file:
+    name: logs/application.log
