@@ -132,7 +132,17 @@ public class McpAutoConfiguration {
 
             serverSpec.toolCall(tool, (exchange, request) -> {
                 try {
-                    Object params = convertArguments(request.arguments(), paramType, objectMapper);
+                    Object params;
+                    try {
+                        params = convertArguments(request.arguments(), paramType, objectMapper);
+                    } catch (Exception e) {
+                        log.error("Argument conversion failed for tool '{}': {}", provider.getName(), e.getMessage());
+                        return McpSchema.CallToolResult.builder()
+                                .addTextContent("Error: Failed to convert arguments for tool '" + provider.getName() + "': " + e.getMessage())
+                                .isError(true)
+                                .build();
+                    }
+
                     String result = provider.execute(params);
                     return McpSchema.CallToolResult.builder()
                             .addTextContent(result)
