@@ -45,6 +45,7 @@ dependencies {
 
     // Test
     testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.18.3'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
