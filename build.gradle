@@ -17,7 +17,7 @@ repositories {
 }
 
 ext {
-    mcpSdkVersion = '1.1.0'
+    mcpSdkVersion = '1.1.1'
     // Minimum compatible Spring Boot version for annotation processors only (build-time)
     springBootVersion = '3.3.0'
 }
