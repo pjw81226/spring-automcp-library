@@ -26,7 +26,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     // Spring MCP Starter
-    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.1'
+    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.2'
 
     // MCP SDK (Jackson 3) requires jackson-annotations 2.20+
     // Spring Boot BOM forces 2.18.x which causes NoSuchFieldError: POJO

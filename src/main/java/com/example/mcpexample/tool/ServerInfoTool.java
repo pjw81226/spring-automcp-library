@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.RuntimeMXBean;
-import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * can understand the runtime context of the backend application.
  */
 @Component
-public class ServerInfoTool implements McpToolProvider {
+public class ServerInfoTool implements McpToolProvider<Void> {
 
     private final Environment environment;
 
@@ -36,12 +35,7 @@ public class ServerInfoTool implements McpToolProvider {
     }
 
     @Override
-    public Class<?> getParameterType() {
-        return null; // no parameters needed
-    }
-
-    @Override
-    public String execute(Map<String, Object> arguments) {
+    public String execute(Void params) {
         RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
         MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
 

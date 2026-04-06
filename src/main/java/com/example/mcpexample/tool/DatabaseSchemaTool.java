@@ -8,7 +8,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.util.Map;
 import java.util.StringJoiner;
 
 /**
@@ -16,7 +15,7 @@ import java.util.StringJoiner;
  * can understand the data model of the backend application.
  */
 @Component
-public class DatabaseSchemaTool implements McpToolProvider {
+public class DatabaseSchemaTool implements McpToolProvider<DatabaseSchemaTool.Params> {
 
     private final DataSource dataSource;
 
@@ -42,13 +41,13 @@ public class DatabaseSchemaTool implements McpToolProvider {
     }
 
     @Override
-    public Class<?> getParameterType() {
+    public Class<Params> getParameterType() {
         return Params.class;
     }
 
     @Override
-    public String execute(Map<String, Object> arguments) {
-        String tableName = (String) arguments.get("tableName");
+    public String execute(Params params) {
+        String tableName = params != null ? params.tableName() : null;
 
         try (Connection conn = dataSource.getConnection()) {
             DatabaseMetaData meta = conn.getMetaData();

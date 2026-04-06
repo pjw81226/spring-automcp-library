@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * can understand the application architecture (controllers, services, repositories, etc.).
  */
 @Component
-public class SpringBeanInspectorTool implements McpToolProvider {
+public class SpringBeanInspectorTool implements McpToolProvider<SpringBeanInspectorTool.Params> {
 
     private final ApplicationContext applicationContext;
 
@@ -45,14 +45,13 @@ public class SpringBeanInspectorTool implements McpToolProvider {
     }
 
     @Override
-    public Class<?> getParameterType() {
+    public Class<Params> getParameterType() {
         return Params.class;
     }
 
     @Override
-    public String execute(Map<String, Object> arguments) {
-        String layer = (String) arguments.getOrDefault("layer", "all");
-        if (layer == null) layer = "all";
+    public String execute(Params params) {
+        String layer = params != null && params.layer() != null ? params.layer() : "all";
 
         Map<String, List<String>> grouped = new LinkedHashMap<>();
         grouped.put("Controller", new ArrayList<>());
