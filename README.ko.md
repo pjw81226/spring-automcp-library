@@ -14,7 +14,8 @@ Spring AI 의존성 없이 공식 `mcp-sdk-java`만 사용합니다.
 - **설정 없이 MCP 서버 구동** -- 의존성만 추가하면 바로 동작합니다.
 - **SSE 기반 통신** -- MCP Java SDK의 `HttpServletSseServerTransportProvider`를 사용합니다.
 - **어노테이션 기반 스키마** -- Java Record와 `@McpParameter`로 도구 파라미터를 정의합니다. JSON Schema를 직접 작성할 필요가 없습니다.
-- **자동 수집** -- `McpToolProvider` 인터페이스를 구현한 Spring Bean은 자동으로 MCP 서버에 등록됩니다.
+- **타입 안전한 파라미터** -- 제네릭 `McpToolProvider<T>` 인터페이스로 JSON 인자를 자동 변환합니다. `Map` 수동 캐스팅이 필요 없습니다.
+- **자동 수집** -- `McpToolProvider<T>` 인터페이스를 구현한 Spring Bean은 자동으로 MCP 서버에 등록됩니다.
 - **내장 도구 제공** -- 로그 테일링, OpenAPI 스펙 추출 도구가 기본 포함되어 있습니다.
 - **Spring Boot 3.3+ 및 4.x 호환**
 
@@ -47,7 +48,7 @@ dependencyResolutionManagement {
 그 다음 의존성을 추가합니다:
 ```groovy
 dependencies {
-    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.1'
+    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.2'
 }
 ```
 
@@ -68,7 +69,7 @@ JitPack 저장소를 추가합니다:
 <dependency>
     <groupId>com.github.pjw81226</groupId>
     <artifactId>spring-mcp-starter</artifactId>
-    <version>v0.0.1</version>
+    <version>v0.0.2</version>
 </dependency>
 ```
 
@@ -91,8 +92,9 @@ mcp:
 ### 3. 커스텀 도구 만들기
 
 ```java
+// 파라미터가 있는 도구
 @Component
-public class HealthCheckTool implements McpToolProvider {
+public class HealthCheckTool implements McpToolProvider<HealthCheckTool.Params> {
 
     public record Params(
         @McpParameter(description = "상태를 확인할 대상 서비스 이름")
@@ -110,16 +112,29 @@ public class HealthCheckTool implements McpToolProvider {
     }
 
     @Override
-    public Class<?> getParameterType() {
+    public Class<Params> getParameterType() {
         return Params.class;
     }
 
     @Override
-    public String execute(Map<String, Object> arguments) {
-        String serviceName = (String) arguments.get("serviceName");
-        // 여기에 실제 로직 작성
-        return serviceName + " is healthy";
+    public String execute(Params params) {
+        // 타입 안전 — 캐스팅 불필요
+        return params.serviceName() + " is healthy";
     }
+}
+
+// 파라미터 없는 도구 — getParameterType() 오버라이드 불필요
+@Component
+public class PingTool implements McpToolProvider<Void> {
+
+    @Override
+    public String getName() { return "ping"; }
+
+    @Override
+    public String getDescription() { return "pong을 반환합니다."; }
+
+    @Override
+    public String execute(Void params) { return "pong"; }
 }
 ```
 
@@ -207,14 +222,14 @@ java.lang.NoSuchFieldError: POJO
   at tools.jackson.databind.deser.DeserializerCache._createDeserializer2(...)
 ```
 
-**원인**: MCP Java SDK (v1.1.0)가 Jackson 3.x를 사용하며, 이 라이브러리는 `jackson-annotations:2.20`을 필요로 합니다.
+**원인**: MCP Java SDK (v1.1.1)가 Jackson 3.x를 사용하며, 이 라이브러리는 `jackson-annotations:2.20`을 필요로 합니다.
 그런데 Spring Boot BOM(`io.spring.dependency-management` 플러그인)이 `jackson-annotations`를 `2.18.x`로 강제 다운그레이드하여 호환성 문제가 발생합니다.
 
 **해결**: `build.gradle`에 `jackson-annotations:2.20`을 명시적으로 선언하여 BOM을 오버라이드합니다:
 
 ```groovy
 dependencies {
-    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.1'
+    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.2'
 
     // 필수: Spring Boot BOM의 jackson-annotations 버전을 오버라이드
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.20'

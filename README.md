@@ -14,7 +14,8 @@ No Spring AI dependency required -- just the official `mcp-sdk-java`.
 - **Zero-config MCP server** -- Add the dependency and it just works.
 - **SSE transport** -- Built on the official `HttpServletSseServerTransportProvider` from the MCP Java SDK.
 - **Annotation-driven schema** -- Define tool parameters with Java Records and `@McpParameter`. No manual JSON Schema writing.
-- **Auto-discovery** -- Any Spring bean implementing `McpToolProvider` is automatically registered as an MCP tool.
+- **Type-safe parameters** -- Generic `McpToolProvider<T>` interface with automatic JSON-to-object conversion. No more manual `Map` casting.
+- **Auto-discovery** -- Any Spring bean implementing `McpToolProvider<T>` is automatically registered as an MCP tool.
 - **Built-in tools** -- Log tailing and OpenAPI spec extraction included out of the box.
 - **Spring Boot 3.3+ and 4.x compatible**
 
@@ -47,7 +48,7 @@ dependencyResolutionManagement {
 Then add the dependency:
 ```groovy
 dependencies {
-    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.1'
+    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.2'
 }
 ```
 
@@ -68,7 +69,7 @@ Then add the dependency:
 <dependency>
     <groupId>com.github.pjw81226</groupId>
     <artifactId>spring-mcp-starter</artifactId>
-    <version>v0.0.1</version>
+    <version>v0.0.2</version>
 </dependency>
 ```
 
@@ -91,8 +92,9 @@ mcp:
 ### 3. Create a custom tool
 
 ```java
+// Tool with parameters
 @Component
-public class HealthCheckTool implements McpToolProvider {
+public class HealthCheckTool implements McpToolProvider<HealthCheckTool.Params> {
 
     public record Params(
         @McpParameter(description = "Target service name to check")
@@ -110,16 +112,29 @@ public class HealthCheckTool implements McpToolProvider {
     }
 
     @Override
-    public Class<?> getParameterType() {
+    public Class<Params> getParameterType() {
         return Params.class;
     }
 
     @Override
-    public String execute(Map<String, Object> arguments) {
-        String serviceName = (String) arguments.get("serviceName");
-        // your logic here
-        return serviceName + " is healthy";
+    public String execute(Params params) {
+        // Type-safe, no casting needed
+        return params.serviceName() + " is healthy";
     }
+}
+
+// Parameterless tool — no getParameterType() override needed
+@Component
+public class PingTool implements McpToolProvider<Void> {
+
+    @Override
+    public String getName() { return "ping"; }
+
+    @Override
+    public String getDescription() { return "Returns pong."; }
+
+    @Override
+    public String execute(Void params) { return "pong"; }
 }
 ```
 
@@ -207,14 +222,14 @@ java.lang.NoSuchFieldError: POJO
   at tools.jackson.databind.deser.DeserializerCache._createDeserializer2(...)
 ```
 
-**Cause**: The MCP Java SDK (v1.1.0) uses Jackson 3.x, which depends on `jackson-annotations:2.20`.
+**Cause**: The MCP Java SDK (v1.1.1) uses Jackson 3.x, which depends on `jackson-annotations:2.20`.
 Spring Boot's BOM (`io.spring.dependency-management` plugin) forces `jackson-annotations` down to `2.18.x`, causing an incompatibility.
 
 **Fix**: Explicitly declare `jackson-annotations:2.20` in your `build.gradle` to override the BOM:
 
 ```groovy
 dependencies {
-    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.1'
+    implementation 'com.github.pjw81226:spring-mcp-starter:v0.0.2'
 
     // Required: override Spring Boot BOM's jackson-annotations version
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.20'
