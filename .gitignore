@@ -46,3 +46,5 @@ Thumbs.db
 # Plan docs (personal)
 implementation_plan.md
 PROGRESS.md
+
+bin/
